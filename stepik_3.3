@@ -1,0 +1,23 @@
+#include <stdio.h>
+#include <stdlib.h>
+int main() {
+  int **mass;
+  int k,n,i,j;
+  scanf("%d%d",&k,&n);
+  mass=(int**)malloc(n*sizeof(int*));
+  for (i=0;i<n;i++){
+        mass[i]=(int*)malloc(k*sizeof(int));
+    }
+      for (i=0;i<n;i++){
+        for(j=0;j<k;j++){
+        scanf("%d",&mass[i][j]);
+       }
+    }
+      for(j=0; j<k;j++){
+       for (i=0;i<n;i++){
+        printf("%d ",mass[i][j]);
+         }
+       printf("\n");
+    }
+   return 0;
+}
