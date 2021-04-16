@@ -1,0 +1,232 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <windows.h>
+//#include <locale.h>
+
+#define STOP 11111111111111
+#define CHAR_POW 94
+
+double* mass1;
+double* mass2;
+
+int powChoice(char* name);
+double* initMass(int maxPow);
+void inputmass(double* mass, int maxPow);
+void printmass(double *mass, int maxPow);
+double* massAdd(double* massMore, double* massSmall, int maxPowMore, int maxPowSmall);
+double* massSub(double* massMore, double* massSmall, int maxPowMore, int maxPowSmall);
+double* massMul(double* massMore, double* massSmall, int maxPowMore, int maxPowSmall);
+double* massDiv(double* mass, int extent, double coefficient, int maxPow);
+double* massDiff(double* mass, int maxPow);
+double differentiationRes(double* mass, int maxPow);
+
+int main() {
+    SetConsoleOutputCP(CP_UTF8);
+    //setlocale(LC_ALL, "Russian");
+    for (int iter = 0; iter < 10; iter++ )
+    {
+
+        int operatione = STOP;
+        printf("Введите номер действия над полиномом: \n 1-Сложение  \n 2-Вычитание  \n 3-Умножение  \n 4-Деление  на моном \n 5-Нахождение производной в точке \n");
+
+        scanf("%d", &operatione);
+        if (operatione == STOP)
+            break;
+        else if (operatione == 1)
+        {
+            int maxPow1 = powChoice("Первого");
+            int maxPow2 = powChoice("Второго");
+            mass1 = initMass(maxPow1);
+            mass2 = initMass(maxPow2);
+            inputmass(mass1, maxPow1);
+            inputmass(mass2, maxPow2);
+            double *addResult;
+            int maxPowToFunc;
+            if (maxPow1 > maxPow2) {
+                maxPowToFunc = maxPow1;
+                addResult = massAdd(mass1, mass2, maxPow1, maxPow2);
+            } else {
+                maxPowToFunc = maxPow2;
+                addResult = massAdd(mass2, mass1, maxPow2, maxPow1);
+            }
+            printf("Результат сложения:  \n");
+            printmass(addResult, maxPowToFunc);
+            free(mass1);
+            free(mass2);
+            free(addResult);
+            break;
+        } else if (operatione == 2) {
+            int maxPow1 = powChoice("Первого");
+            int maxPow2 = powChoice("Второго");
+            mass1 = initMass(maxPow1);
+            mass2 = initMass(maxPow2);
+            inputmass(mass1, maxPow1);
+            inputmass(mass2, maxPow2);
+            double *addResult;
+            int maxPowToFunc;
+            if (maxPow1 > maxPow2) {
+                maxPowToFunc = maxPow1;
+                addResult = massSub(mass1, mass2, maxPow1, maxPow2);
+            } else {
+                maxPowToFunc = maxPow2;
+                addResult = massSub(mass2, mass1, maxPow2, maxPow1);
+            }
+            printf("Результат вычитания :  \n");
+            printmass(addResult, maxPowToFunc);
+            free(mass1);
+            free(mass2);
+            free(addResult);
+            break;
+        } else if (operatione == 3) {
+            int maxPow1 = powChoice("Первого");
+            int maxPow2 = powChoice("Второго");
+            mass1 = initMass(maxPow1);
+            mass2 = initMass(maxPow2);
+            inputmass(mass1, maxPow1);
+            inputmass(mass2, maxPow2);
+            double *addResult;
+            int maxPowToFunc;
+            if (maxPow1 > maxPow2) {
+                maxPowToFunc = maxPow1;
+                addResult = massMul(mass1, mass2, maxPow1, maxPow2);
+            } else {
+                maxPowToFunc = maxPow2;
+                addResult = massMul(mass2, mass1, maxPow2, maxPow1);
+            }
+            printf("Результат умножения :  \n");
+            printmass(addResult, maxPow1 + maxPow2);
+            free(mass1);
+            free(mass2);
+            free(addResult);
+            break;
+        } else if (operatione == 4) {
+            int maxPow1 = powChoice("");
+            mass1 = initMass(maxPow1);
+            inputmass(mass1, maxPow1);
+            int extent;
+            double coefficient;
+            printf("Введите коэфициент монома: \n");
+            scanf("%lf", &coefficient);
+            printf("Введите степень монома: \n");
+            scanf("%d", &extent);
+            double *addResult = massDiv(mass1, extent, coefficient, maxPow1);
+            free(mass1);
+            free(mass2);
+            free(addResult);
+            break;
+        } else if (operatione == 5) {
+            int maxPow = powChoice("");
+            mass1 = initMass(maxPow);
+            inputmass(mass1, maxPow);
+            double *diffResult = massDiff(mass1, maxPow);
+            double res = differentiationRes(diffResult, maxPow);
+            printf("Результат дифференцирования в точке x0: %lf\n", res);
+            free(mass1);
+            free(diffResult);
+            break;
+
+        } else {
+            printf("Выберите одно из доступных действий \n");
+            fflush(stdout);
+        }
+    }
+    return 0;
+}
+
+int powChoice(char* name){
+    int usermaxPow;
+    printf("Введите максимальную степень %s полиномов: \n", name);
+    scanf("%d", &usermaxPow);
+    return ++usermaxPow;
+}
+
+double* initMass(int maxPow){
+    double* massRes = (double*) malloc(sizeof(double) * maxPow);
+    for (int i = 0; i < maxPow; i++){
+        massRes[i] = 0;
+    }
+    return massRes;
+}
+
+void inputmass(double* mass, int maxPow){
+    for(int i = 0; i < maxPow; ++i){
+        printf("Введите коэффицент для степени %d\n ", i);
+        double inputNumber;
+        scanf("%lf", &inputNumber);
+        mass[i] =  inputNumber;
+    }
+}
+
+void printmass(double *mass, int maxPow){
+    int flag = 0;
+    for (int i = maxPow - 1; i >= 0; --i) {
+        if(mass[i] != 0)
+            printf("%s%.2lfx%c%d ", (mass[i] > 0 && flag++ != 0) ? "+" : "", mass[i], CHAR_POW, i);
+    }
+    printf("\n");
+}
+
+double* massAdd(double* massMore, double* massSmall, int maxPowMore, int maxPowSmall){
+    double* massRes = initMass(maxPowMore);
+    for (int i = 0; i < maxPowMore; ++i) {
+        massRes[i] = massMore[i];
+    }
+    for (int i = 0; i < maxPowSmall; ++i) {
+        massRes[i] += massSmall[i];
+    }
+    return massRes;
+}
+
+
+double* massSub(double* massMore, double* massSmall, int maxPowMore, int maxPowSmall){
+    double* massRes = initMass(maxPowMore);
+    for (int i = 0; i < maxPowMore; ++i) {
+        massRes[i] = massMore[i];
+    }
+    for (int i = 0; i < maxPowSmall; ++i) {
+        massRes[i] -= massSmall[i];
+    }
+    return massRes;
+}
+
+double* massMul(double* massMore, double* massSmall, int maxPowMore, int maxPowSmall){
+    double* massRes = initMass(maxPowMore + maxPowSmall);
+    for (int i = 0; i < maxPowMore; ++i) {
+        for(int j = 0; j < maxPowSmall; ++j){
+            massRes[i + j] += massMore[i] * massSmall[j];
+        }
+    }
+    return massRes;
+}
+
+double* massDiv(double* mass, int extent, double coefficient, int maxPow){
+    double* res = initMass(maxPow - extent);
+    for (int i = extent; i < maxPow; ++i) {
+        if (mass[i] != 0)
+            res[i - extent] = mass[i] / coefficient;
+    }
+    printf("\nРезультат деления: ");
+    printmass(res,maxPow-extent);
+    printf("\nОстаток: ");
+    printmass(mass,extent);
+    return res;
+}
+
+double* massDiff(double* mass, int maxPow){
+    double* massRes = initMass(maxPow);
+    for(int i = 1; i < maxPow; ++i){
+        massRes[i - 1] = mass[i] * i;
+    }
+    return massRes;
+}
+
+double differentiationRes(double* mass, int maxPow){
+    double result = 0;
+    int x;
+    printf("Введите точку: \n");
+    scanf("%d", &x);
+    for(int i = 0; i < maxPow; ++i){
+        result += mass[i] * pow(x, i);
+    }
+    return result;
